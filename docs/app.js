@@ -97,7 +97,9 @@ function getInputTaiex() {
 function applyModeUi() {
   const tx = isTxMode();
   els.modeTabs.forEach((tab) => {
-    tab.classList.toggle("active", tab.dataset.mode === inputMode);
+    const active = tab.dataset.mode === inputMode;
+    tab.classList.toggle("active", active);
+    tab.setAttribute("aria-selected", active ? "true" : "false");
   });
   els.inputLabel.textContent = tx ? `${TX_LABEL} 價格` : "TAIEX 點位";
   els.input.placeholder = tx ? "例如 44995" : "例如 44500";
@@ -171,9 +173,8 @@ function render() {
   }
 
   const updated = new Date(data.updated_at);
-  const txNote = data.latest.tx != null ? `｜${TX_LABEL} ${fmt(data.latest.tx, 0)}` : "";
-  const taiexNote = data.taiex?.source === "TradingView" ? "｜TAIEX TradingView" : "";
-  els.status.textContent = `最後更新 ${updated.toLocaleString("zh-TW")}（樣本 ${data.sample.start} ~ ${data.sample.end}${taiexNote}${txNote}）`;
+  const sample = `${data.sample.start} ~ ${data.sample.end}`;
+  els.status.textContent = `資料更新 ${updated.toLocaleString("zh-TW", { hour: "2-digit", minute: "2-digit", month: "numeric", day: "numeric" })}（樣本 ${sample}）`;
 }
 
 function readUrlParams() {
@@ -209,11 +210,11 @@ async function loadData() {
 
 function startCountdown() {
   countdown = REFRESH_SEC;
-  els.countdown.textContent = `${countdown}s 後更新`;
+  if (els.countdown) els.countdown.textContent = `${countdown}s 後更新`;
   if (timer) clearInterval(timer);
   timer = setInterval(async () => {
     countdown -= 1;
-    els.countdown.textContent = `${countdown}s 後更新`;
+    if (els.countdown) els.countdown.textContent = `${countdown}s 後更新`;
     if (countdown <= 0) {
       try {
         await loadData();

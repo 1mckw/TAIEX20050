@@ -3,79 +3,85 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>TAIEX → 0050 / 0050反 即時換算</title>
+  <title>TAIEX → 0050 / 0050反 換算</title>
   <link rel="stylesheet" href="styles.css">
 </head>
 <body>
   <div class="wrap">
-    <header>
-      <h1>TAIEX / TAIEX FUTURES → 0050 / 0050反</h1>
-      <p class="sub">
-        <span id="status">載入中…</span>
-        <span class="dot">·</span>
-        <span id="countdown">--</span>
-      </p>
+    <header class="page-header">
+      <p class="eyebrow">即時換算工具</p>
+      <h1>0050 / 0050反 價格推算</h1>
+      <div class="status-bar">
+        <span id="status" class="status-text">載入中…</span>
+        <span id="countdown" class="status-countdown">--</span>
+      </div>
     </header>
 
-    <section class="calc-panel">
-      <div class="calc-header">
-        <div>
-          <h2>價格換算</h2>
-          <p class="calc-hint">輸入 TAIEX 或 TAIEX FUTURES 點位，即時推算 0050 與 0050反</p>
+    <section class="calc-panel" aria-label="價格換算">
+      <div class="panel-toolbar">
+        <label class="field-compact">
+          <span class="field-label">換算方法</span>
+          <select id="method">
+            <option value="spread" selected>價差法</option>
+            <option value="ratio">倍率法</option>
+            <option value="regression">迴歸法</option>
+          </select>
+        </label>
+        <button id="refresh-btn" type="button" class="btn-refresh">立即更新</button>
+      </div>
+
+      <div class="section-block">
+        <h2 class="section-title">輸入點位</h2>
+
+        <div class="mode-tabs" role="tablist" aria-label="標的類型">
+          <button type="button" class="mode-tab active" data-mode="taiex" role="tab" aria-selected="true">TAIEX</button>
+          <button type="button" class="mode-tab" data-mode="tx" role="tab" aria-selected="false">TAIEX FUTURES</button>
         </div>
-        <div class="calc-header-actions">
-          <label class="method-field">
-            <span>方法</span>
-            <select id="method">
-              <option value="spread" selected>價差法 spread</option>
-              <option value="ratio">倍率法 ratio</option>
-              <option value="regression">迴歸法 regression</option>
-            </select>
+
+        <div class="input-grid">
+          <label class="field">
+            <span class="field-label" id="input-label">TAIEX 點位</span>
+            <input id="price-input" type="number" step="0.01" inputmode="decimal" placeholder="例如 44500">
           </label>
-          <button id="refresh-btn" type="button" class="btn-refresh">立即更新</button>
+          <label class="field basis-field hidden" id="basis-wrap">
+            <span class="field-label">基差 <span class="field-hint">FUTURES − TAIEX</span></span>
+            <input id="basis" type="number" step="1" inputmode="numeric" value="0" placeholder="0">
+          </label>
+          <div class="field field-action">
+            <span class="field-label">快速帶入</span>
+            <button type="button" id="latest-btn" class="btn-secondary">帶入最新 TAIEX</button>
+          </div>
         </div>
+
+        <p class="conversion-note hidden" id="implied-taiex-line">
+          <span id="tx-source-line">TAIEX FUTURES --</span>
+          <span class="arrow" aria-hidden="true">→</span>
+          <span>隱含 TAIEX <strong id="implied-taiex">--</strong></span>
+        </p>
       </div>
 
-      <div class="mode-tabs" role="tablist">
-        <button type="button" class="mode-tab active" data-mode="taiex" role="tab">TAIEX</button>
-        <button type="button" class="mode-tab" data-mode="tx" role="tab">TAIEX FUTURES</button>
-      </div>
-
-      <div class="calc-row">
-        <label class="calc-field">
-          <span id="input-label">TAIEX 點位</span>
-          <input id="price-input" type="number" step="0.01" placeholder="例如 44500">
-        </label>
-        <label class="calc-field basis-field hidden" id="basis-wrap">
-          <span>基差 <small>(TAIEX FUTURES − TAIEX)</small></span>
-          <input id="basis" type="number" step="1" value="0" placeholder="0">
-        </label>
-        <div class="calc-field calc-action">
-          <span class="invisible-label">操作</span>
-          <button type="button" id="latest-btn" class="btn-latest">帶入最新 TAIEX</button>
-        </div>
-      </div>
-
-      <p class="implied-taiex hidden" id="implied-taiex-line">
-        <span id="tx-source-line">TAIEX FUTURES --</span>
-        <span class="arrow">→</span>
-        隱含 TAIEX：<strong id="implied-taiex">--</strong>
-      </p>
-
-      <div class="calc-results">
-        <div class="calc-result">
-          <span class="calc-result-label">推算 0050</span>
-          <span class="calc-result-value" id="implied-etf50">--</span>
-        </div>
-        <div class="calc-result inv">
-          <span class="calc-result-label">推算 0050反</span>
-          <span class="calc-result-value" id="implied-etf-inv">--</span>
+      <div class="section-block results-block">
+        <h2 class="section-title">推算結果</h2>
+        <div class="calc-results">
+          <article class="result-card">
+            <span class="result-label">0050</span>
+            <span class="result-value" id="implied-etf50">--</span>
+            <span class="result-unit">元</span>
+          </article>
+          <article class="result-card inverse">
+            <span class="result-label">0050反</span>
+            <span class="result-value" id="implied-etf-inv">--</span>
+            <span class="result-unit">元</span>
+          </article>
         </div>
       </div>
     </section>
 
-    <p class="meta">TAIEX / TAIEX FUTURES：TradingView <a href="https://www.tradingview.com/symbols/INDEX-TAIEX/" target="_blank" rel="noopener">TAIEX</a>、<a href="https://www.tradingview.com/symbols/TAIFEX-TXF1!/" target="_blank" rel="noopener">TXF1!</a>｜0050 / 0050反：Yahoo Finance。每 5 分鐘更新。僅供參考，非投資建議。</p>
+    <footer class="meta">
+      <p>TAIEX / FUTURES 來源 <a href="https://www.tradingview.com/symbols/INDEX-TAIEX/" target="_blank" rel="noopener">TradingView</a>　｜　0050 / 0050反 來源 Yahoo Finance</p>
+      <p class="meta-note">每 5 分鐘更新 · 僅供參考，非投資建議</p>
+    </footer>
   </div>
-  <script src="app.js?v=10"></script>
+  <script src="app.js?v=11"></script>
 </body>
 </html>
